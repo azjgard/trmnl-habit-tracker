@@ -1,8 +1,10 @@
 import { waitUntil } from "@vercel/functions";
 import { createClient, VercelClient } from "@vercel/postgres";
 import { NextRequest } from "next/server";
+import { v4 } from "uuid";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+import { put } from "@vercel/blob";
 
 export async function GET(_request: NextRequest) {
   let client: VercelClient | undefined;
@@ -25,6 +27,13 @@ export async function GET(_request: NextRequest) {
       })
     );
   }
+}
+
+async function uploadImage(imageString: string) {
+  const id = v4();
+  const { url } = await put(`habit_images/${id}`, "Hello World!", {
+    access: "public",
+  });
 }
 
 type UpdateBody = Partial<{

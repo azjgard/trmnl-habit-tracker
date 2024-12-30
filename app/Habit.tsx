@@ -23,6 +23,7 @@ export default function Habit(props: {
 
   const [metaState, setMetaState] = useState({
     loading: false,
+    file: null as File | null,
     error: null as string | null,
   });
 
@@ -60,12 +61,12 @@ export default function Habit(props: {
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      console.log(e.target);
       const image = e.target?.result;
       setHabitState((prev) => ({
         ...prev,
         image: image as string,
       }));
+      setMetaState((s) => ({ ...s, file }));
     };
     reader.readAsDataURL(file);
   };
@@ -104,6 +105,17 @@ export default function Habit(props: {
 
     if (habit.id > 0) {
       body.id = habit.id;
+    }
+
+    if (metaState.file) {
+      const imageFormData = new FormData();
+      imageFormData.append("image", metaState.file);
+      const imageResponse = await fetch("/api/habit_image", {
+        method: "PUT",
+        body: imageFormData,
+      });
+      body.image = await imageResponse.text();
+      setMetaState((s) => ({ ...s, file: null }));
     }
 
     const response = await fetch("/api/habit", {
