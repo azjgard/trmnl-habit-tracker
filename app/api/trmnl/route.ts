@@ -2,13 +2,13 @@ import { NextRequest } from "next/server";
 import { createClient, VercelClient } from "@vercel/postgres";
 import { waitUntil } from "@vercel/functions";
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic"; // static by default, unless reading the request
+export const dynamic = "force-dynamic";
 
 function sundayFirstToMondayFirst(day: number) {
   return (day + 6) % 7;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   let client: VercelClient | undefined;
 
   try {
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       ];
       return {
         ...habit,
-        daysAccomplished,
+        days: daysAccomplished,
       };
     });
 

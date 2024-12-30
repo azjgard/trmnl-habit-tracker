@@ -1,0 +1,27 @@
+.habit {
+  position: relative;
+  border: 1px solid #fff;
+  padding: 12px;
+
+  & fieldset {
+    border: 0;
+    padding: 6px;
+  }
+
+  & img {
+    display: inline-block;
+    max-width: 200px;
+  }
+
+  & button {
+    display: block;
+    cursor: pointer;
+  }
+
+  & .delete {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    padding: 2px 6px;
+  }
+}
