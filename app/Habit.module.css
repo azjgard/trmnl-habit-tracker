@@ -1,27 +1,151 @@
-.habit {
+.habitContainer {
+  width: 400px;
+  padding: 10px;
+  font-size: 16px;
   position: relative;
-  border: 1px solid #fff;
-  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
 
-  & fieldset {
-    border: 0;
-    padding: 6px;
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.habitImage {
+  width: 108px;
+  height: 80px;
+  margin: 0 10px;
+  position: relative;
+
+  & > img {
+    width: 100%;
+    height: 100%;
+    filter: grayscale(100%);
   }
 
-  & img {
-    display: inline-block;
-    max-width: 200px;
+  &,
+  & > img {
+    border-radius: 10px;
   }
+}
 
-  & button {
+.habitImageUpload {
+  color: transparent;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  overflow: hidden;
+
+  & > input {
+    /* close enough for now ;) file inputs are annoying but don't want to add a dep for this */
+    margin-top: 30px;
+    margin-left: 9px;
+  }
+}
+
+.habitRemoveButton,
+.habitImageRemoveButton {
+  display: block;
+  position: absolute;
+  padding: 3px;
+  background: none;
+  top: 3px;
+  right: 3px;
+  border: none;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 3px;
+  border-radius: 4px;
+  display: none;
+  &:hover {
+    background-color: #efefef;
+  }
+}
+
+.habitImage:hover {
+  & .habitImageRemoveButton {
     display: block;
-    cursor: pointer;
   }
+}
 
-  & .delete {
-    position: absolute;
-    right: 5px;
-    top: 5px;
-    padding: 2px 6px;
+
+.habitContainer:hover {
+  & .habitRemoveButton {
+    display: block;
   }
+}
+
+.habitName,
+.habitWeeklyTarget {
+  margin: 0;
+}
+
+.habitName,
+.habitName input {
+  margin: 0;
+  font-size: 20px;
+  border: 1px solid transparent;
+}
+
+.habitWeeklyTarget {
+  font-weight: normal;
+  font-size: 16px;
+  & .bold {
+    font-weight: bold;
+  }
+  & > input {
+    width: 20px;
+    text-align: center;
+    margin-left: 3px;
+  }
+}
+
+.habitDayList {
+  display: flex;
+  justify-content: space-between;
+  list-style-type: none;
+  gap: 10px;
+  margin: 10px 0 0 0;
+  padding: 0;
+  width: 100%;
+}
+
+.habitDay {
+  border: 3px solid black;
+  box-sizing: border-box;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+
+  &.accomplished {
+    opacity: .6;
+    background-color: #C6C6C6;
+    border-color: #757575;
+  }
+  &.failed {
+    opacity: .4;
+    background-color: #C6C6C6;
+    border-color: #757575;
+  }
+  &.today {
+    border-style: dashed;
+  }
+}
+
+.saveChangesContainer {
+  margin: 10px 0 0 0;
+}
+
+.error {
+  font-size: 12px;
+  margin: -5px 0 5px 0;
+  color: red;
 }

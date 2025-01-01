@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 import { defineAuthenticatedRoute } from "../lib";
+import { loadHabitsWithDaysAccomplished } from "@/app/backend/services/habit";
 
 export const GET = defineAuthenticatedRoute(async (_request: NextRequest) => {
   let client: VercelClient | undefined;
@@ -23,7 +24,7 @@ export const GET = defineAuthenticatedRoute(async (_request: NextRequest) => {
       new Promise((resolve) => {
         if (!client) return resolve(null);
         return client.end();
-      })
+      }),
     );
   }
 });
@@ -61,26 +62,18 @@ export const PUT = defineAuthenticatedRoute(async (request: NextRequest) => {
         WHERE id = ${body.id}
       `;
 
-      const {
-        rows: [newHabit],
-      } = await client.sql`SELECT * from habits WHERE id = ${body.id}`;
+      // there will never be more than a handful of habits so we can just
+      // reload all of them
+      const habits = await loadHabitsWithDaysAccomplished();
 
-      return new Response(JSON.stringify(newHabit));
+      return new Response(JSON.stringify(habits));
     }
 
-    const {
-      rows: [{ id: newHabitId }],
-    } = (await client.sql`
-      INSERT INTO habits (name, image, weekly_goal)
-      VALUES (${body.name}, ${body.image}, ${body.weekly_goal})
-      RETURNING id
-    `) as { rows: { id: number }[] };
+    // there will never be more than a handful of habits so we can just
+    // reload all of them
+    const habits = await loadHabitsWithDaysAccomplished();
 
-    const {
-      rows: [newHabit],
-    } = await client.sql`SELECT * from habits WHERE id = ${newHabitId}`;
-
-    return new Response(JSON.stringify(newHabit));
+    return new Response(JSON.stringify(habits));
   } catch (e) {
     console.error(e);
     return new Response();
@@ -89,7 +82,7 @@ export const PUT = defineAuthenticatedRoute(async (request: NextRequest) => {
       new Promise((resolve) => {
         if (!client) return resolve(null);
         return client.end();
-      })
+      }),
     );
   }
 });
@@ -116,7 +109,7 @@ export const DELETE = defineAuthenticatedRoute(async (request: NextRequest) => {
       new Promise((resolve) => {
         if (!client) return resolve(null);
         return client.end();
-      })
+      }),
     );
   }
 });

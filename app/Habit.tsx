@@ -1,34 +1,39 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import classNames from "classnames";
 
 import style from "./Habit.module.css";
 import { getInstancePasswordHeaders } from "./lib";
 
-export type Habit = {
-  id: number;
-  name: string;
-  image: string | null;
-  weekly_goal: number;
-};
+import type {
+  Habit as HabitType,
+  HabitsWithDaysAccomplished,
+} from "./backend/services/habit";
 
-type HabitState = Omit<Habit, "weekly_goal"> & { weekly_goal: number | "" };
+type HabitState = Omit<HabitType, "weekly_goal"> & { weekly_goal: number | "" };
 
 export default function Habit(props: {
-  habit: Habit;
+  habit: HabitType;
+  today: number;
   onRemove: (id: number) => void;
-  onUpdate: (habit: Habit) => void;
+  onUpdate: (habits: HabitType[]) => void;
 }) {
   const habitStateInitial = useRef<HabitState>(props.habit);
+  const habitFromProps = props.habit;
   const [habitState, setHabitState] = useState<HabitState>(props.habit);
+
+  // this is gross but doesn't matter rn
+  useEffect(() => {
+    habitStateInitial.current = habitFromProps;
+    setHabitState(habitFromProps);
+  }, [habitFromProps, setHabitState]);
 
   const [metaState, setMetaState] = useState({
     loading: false,
     file: null as File | null,
     error: null as string | null,
   });
-
-  const { habit: habit } = props;
 
   const hasChanges = useMemo(() => {
     return (
@@ -40,9 +45,15 @@ export default function Habit(props: {
 
   const onWeeklyGoalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    const valueInt = parseInt(value);
+
+    const weeklyGoal = isNaN(valueInt)
+      ? ""
+      : Math.min(7, Math.max(1, valueInt));
+
     setHabitState((prev) => ({
       ...prev,
-      weekly_goal: value ? parseInt(value) : "",
+      weekly_goal: weeklyGoal,
     }));
 
     setMetaState((s) => ({ ...s, error: null }));
@@ -104,8 +115,8 @@ export default function Habit(props: {
       weekly_goal: habitState.weekly_goal,
     };
 
-    if (habit.id > 0) {
-      body.id = habit.id;
+    if (habitFromProps.id > 0) {
+      body.id = habitFromProps.id;
     }
 
     if (metaState.file) {
@@ -126,11 +137,12 @@ export default function Habit(props: {
       headers: getInstancePasswordHeaders(),
     });
 
-    const newHabit = await response.json();
-    habitStateInitial.current = newHabit;
-    setHabitState(newHabit);
+    const { habits: newHabits }: HabitsWithDaysAccomplished =
+      await response.json();
+
+    props.onUpdate(newHabits);
+
     setMetaState((s) => ({ ...s, loading: false }));
-    props.onUpdate(newHabit);
   };
 
   const onDeleteClick = async () => {
@@ -140,12 +152,12 @@ export default function Habit(props: {
 
     const response = await fetch("/api/habit", {
       method: "DELETE",
-      body: JSON.stringify({ id: habit.id }),
+      body: JSON.stringify({ id: habitFromProps.id }),
       headers: getInstancePasswordHeaders(),
     });
 
     if (response.ok) {
-      props.onRemove(habit.id);
+      props.onRemove(habitFromProps.id);
       return;
     }
 
@@ -157,43 +169,76 @@ export default function Habit(props: {
   };
 
   return (
-    <div className={style.habit}>
-      <button className={style.delete} onClick={onDeleteClick}>
-        X
-      </button>
-      <fieldset>
-        <label>
-          Name:{" "}
-          <input type="text" value={habitState.name} onChange={onNameChange} />
-        </label>
-      </fieldset>
-      <fieldset>
-        <label>
-          Weekly Goal:{" "}
-          <input
-            type="number"
-            value={habitState.weekly_goal}
-            onChange={onWeeklyGoalChange}
-          />{" "}
-        </label>
-      </fieldset>
-      <fieldset>
-        <label>
-          {habitState.image && (
-            <>
-              <img src={habitState.image} />
-              <button onClick={onImageRemoval}>Remove image</button>
-            </>
-          )}
-          {!habitState.image && (
-            <>
-              <p>No image uploaded</p>
-              <input type="file" onChange={onImageUpload} />
-            </>
-          )}
-        </label>
-      </fieldset>
-      <fieldset>
+    <>
+      <div className={style.habitContainer}>
+        <button className={style.habitRemoveButton} onClick={onDeleteClick}>
+          ❌
+        </button>
+        <div className={style.row}>
+          <div className={style.habitImage}>
+            {habitState.image && (
+              <>
+                <img src={habitState.image} />
+                <button
+                  className={style.habitImageRemoveButton}
+                  onClick={onImageRemoval}
+                >
+                  ❌
+                </button>
+              </>
+            )}
+            {!habitState.image && (
+              <div className={style.habitImageUpload}>
+                <input type="file" onChange={onImageUpload} />
+              </div>
+            )}
+          </div>
+          <div className={style.habitInfo}>
+            <h1 className={style.habitName}>
+              <input
+                type="text"
+                value={habitState.name}
+                onChange={onNameChange}
+                placeholder="Do something cool"
+              />
+            </h1>
+            <h3 className={style.habitWeeklyTarget}>
+              Targeting
+              <input
+                type="text"
+                className={style.bold}
+                value={habitState.weekly_goal}
+                onChange={onWeeklyGoalChange}
+              />{" "}
+              day{habitState.weekly_goal === 1 ? "" : "s"} per week
+            </h3>
+          </div>
+        </div>
+        <div className={style.row}>
+          <ul className={style.habitDayList}>
+            {habitState.days.map((day, i) => {
+              const isAccomplished = day;
+              const isToday = props.today === i;
+              const isFailed = props.today > i;
+
+              return (
+                <li
+                  key={i}
+                  className={classNames(style.habitDay, {
+                    [style.accomplished]: isAccomplished,
+                    [style.today]: isToday,
+                    [style.failed]: isFailed,
+                  })}
+                >
+                  {getDayLabel(i, isAccomplished, isFailed)}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+      <div className={style.saveChangesContainer}>
+        {metaState.error && <p className={style.error}>{metaState.error}</p>}
         {hasChanges && (
           <button
             onClick={onSaveChanges}
@@ -202,8 +247,56 @@ export default function Habit(props: {
             {metaState.loading ? "Saving..." : "Save Changes"}
           </button>
         )}
-        {metaState.error && <p>{metaState.error}</p>}
-      </fieldset>
-    </div>
+      </div>
+    </>
   );
+}
+
+function getDayLabel(
+  index: number,
+  isAccomplished: boolean,
+  isPassed: boolean,
+) {
+  if (isPassed) {
+    if (isAccomplished) {
+      return "✅";
+    } else {
+      return (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            borderRadius: "50%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            fontWeight: "bold",
+            fontSize: "22px",
+            color: "#757575",
+          }}
+        >
+          X
+        </div>
+      );
+    }
+  }
+
+  switch (index) {
+    case 0:
+      return "M";
+    case 1:
+      return "Tu";
+    case 2:
+      return "W";
+    case 3:
+      return "Th";
+    case 4:
+      return "Fr";
+    case 5:
+      return "Sa";
+    case 6:
+      return "Su";
+    default:
+      throw new Error("Invalid day index: " + index);
+  }
 }
