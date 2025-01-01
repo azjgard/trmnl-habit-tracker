@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { createClient, VercelClient } from "@vercel/postgres";
 import { waitUntil } from "@vercel/functions";
+import { defineAuthenticatedRoute } from "../lib";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -8,7 +9,7 @@ function sundayFirstToMondayFirst(day: number) {
   return (day + 6) % 7;
 }
 
-export async function GET(_request: NextRequest) {
+export const GET = defineAuthenticatedRoute(async (_request: NextRequest) => {
   let client: VercelClient | undefined;
 
   try {
@@ -85,4 +86,4 @@ export async function GET(_request: NextRequest) {
       })
     );
   }
-}
+});

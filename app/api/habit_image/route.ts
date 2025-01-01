@@ -3,8 +3,9 @@ import { v4 } from "uuid";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 import { put } from "@vercel/blob";
+import { defineAuthenticatedRoute } from "../lib";
 
-export async function PUT(request: NextRequest) {
+export const PUT = defineAuthenticatedRoute(async (request: NextRequest) => {
   const body = await request.formData();
   const image = body.get("image");
   if (!image) {
@@ -16,4 +17,4 @@ export async function PUT(request: NextRequest) {
   });
 
   return new Response(url);
-}
+});

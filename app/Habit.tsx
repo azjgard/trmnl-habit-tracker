@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 
 import style from "./Habit.module.css";
+import { getInstancePasswordHeaders } from "./lib";
 
 export type Habit = {
   id: number;
@@ -113,6 +114,7 @@ export default function Habit(props: {
       const imageResponse = await fetch("/api/habit_image", {
         method: "PUT",
         body: imageFormData,
+        headers: getInstancePasswordHeaders(),
       });
       body.image = await imageResponse.text();
       setMetaState((s) => ({ ...s, file: null }));
@@ -121,6 +123,7 @@ export default function Habit(props: {
     const response = await fetch("/api/habit", {
       method: "PUT",
       body: JSON.stringify(body),
+      headers: getInstancePasswordHeaders(),
     });
 
     const newHabit = await response.json();
@@ -138,6 +141,7 @@ export default function Habit(props: {
     const response = await fetch("/api/habit", {
       method: "DELETE",
       body: JSON.stringify({ id: habit.id }),
+      headers: getInstancePasswordHeaders(),
     });
 
     if (response.ok) {

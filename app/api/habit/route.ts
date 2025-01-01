@@ -1,12 +1,11 @@
 import { waitUntil } from "@vercel/functions";
 import { createClient, VercelClient } from "@vercel/postgres";
 import { NextRequest } from "next/server";
-import { v4 } from "uuid";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-import { put } from "@vercel/blob";
+import { defineAuthenticatedRoute } from "../lib";
 
-export async function GET(_request: NextRequest) {
+export const GET = defineAuthenticatedRoute(async (_request: NextRequest) => {
   let client: VercelClient | undefined;
 
   try {
@@ -27,14 +26,7 @@ export async function GET(_request: NextRequest) {
       })
     );
   }
-}
-
-async function uploadImage(imageString: string) {
-  const id = v4();
-  const { url } = await put(`habit_images/${id}`, "Hello World!", {
-    access: "public",
-  });
-}
+});
 
 type UpdateBody = Partial<{
   id: number;
@@ -43,7 +35,7 @@ type UpdateBody = Partial<{
   weekly_goal: number;
 }>;
 
-export async function PUT(request: NextRequest) {
+export const PUT = defineAuthenticatedRoute(async (request: NextRequest) => {
   let client: VercelClient | undefined;
 
   try {
@@ -100,11 +92,11 @@ export async function PUT(request: NextRequest) {
       })
     );
   }
-}
+});
 
 type DeleteBody = { id: number };
 
-export async function DELETE(request: NextRequest) {
+export const DELETE = defineAuthenticatedRoute(async (request: NextRequest) => {
   let client: VercelClient | undefined;
 
   try {
@@ -127,4 +119,4 @@ export async function DELETE(request: NextRequest) {
       })
     );
   }
-}
+});

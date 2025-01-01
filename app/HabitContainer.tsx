@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Habit, { Habit as HabitType } from "./Habit";
 
 export default function HabitContainer(props: { initialHabits: HabitType[] }) {
   const [habits, setHabits] = useState(props.initialHabits);
+  const [validated, setValidated] = useState(false);
 
   const onRemoveHabit = (id: number) => {
     setHabits((prev) => prev.filter((habit) => habit.id !== id));
