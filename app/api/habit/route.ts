@@ -24,7 +24,7 @@ export const GET = defineAuthenticatedRoute(async (_request: NextRequest) => {
       new Promise((resolve) => {
         if (!client) return resolve(null);
         return client.end();
-      }),
+      })
     );
   }
 });
@@ -69,6 +69,11 @@ export const PUT = defineAuthenticatedRoute(async (request: NextRequest) => {
       return new Response(JSON.stringify(habits));
     }
 
+    await client.sql`
+      INSERT INTO habits (name, image, weekly_goal)
+      VALUES (${body.name}, ${body.image}, ${body.weekly_goal})
+    `;
+
     // there will never be more than a handful of habits so we can just
     // reload all of them
     const habits = await loadHabitsWithDaysAccomplished();
@@ -82,7 +87,7 @@ export const PUT = defineAuthenticatedRoute(async (request: NextRequest) => {
       new Promise((resolve) => {
         if (!client) return resolve(null);
         return client.end();
-      }),
+      })
     );
   }
 });
@@ -109,7 +114,7 @@ export const DELETE = defineAuthenticatedRoute(async (request: NextRequest) => {
       new Promise((resolve) => {
         if (!client) return resolve(null);
         return client.end();
-      }),
+      })
     );
   }
 });
