@@ -9,7 +9,7 @@ export const GET = defineAuthenticatedRoute(async (_request: NextRequest) => {
   if (habitsWithDaysAccomplished) {
     return Response.json({
       ...habitsWithDaysAccomplished,
-      testHtml: '<h1 style="color:red;">Test</h1>',
+      testHtml: '<h1 style="color:red; font-size:50px;">Test</h1>',
     });
   }
 
