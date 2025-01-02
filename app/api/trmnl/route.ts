@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const GET = defineAuthenticatedRoute(async (_request: NextRequest) => {
   const habitsWithDaysAccomplished = await loadHabitsWithDaysAccomplished();
   if (habitsWithDaysAccomplished) {
-    return new Response(JSON.stringify(habitsWithDaysAccomplished));
+    return Response.json(habitsWithDaysAccomplished);
   }
 
   return new Response("Failed to load habits", { status: 500 });
