@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 
 export function validateInstancePassword(
-  instancePassword: string | null | undefined,
+  instancePassword: string | null | undefined
 ) {
   const instancePasswordFromEnv = process.env.INSTANCE_PASSWORD;
   if (!instancePasswordFromEnv) {
@@ -16,14 +16,16 @@ export function validateInstancePassword(
 }
 
 export function defineAuthenticatedRoute(
-  handler: (request: NextRequest) => Promise<Response> | Response,
+  handler: (request: NextRequest) => Promise<Response> | Response
 ) {
   return (request: NextRequest) => {
+    const instancePassword = request.headers.get("x-instance-password");
     try {
-      validateInstancePassword(request.headers.get("x-instance-password"));
+      validateInstancePassword(instancePassword);
       return handler(request);
     } catch (e) {
-      console.error(e);
+      const msg = `Invalid instance password '${instancePassword}' in authenticated route`;
+      console.error(msg, e);
       return new Response("Instance password required", { status: 400 });
     }
   };
