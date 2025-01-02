@@ -8,8 +8,9 @@ export function middleware(request: NextRequest) {
   try {
     validateInstancePassword(search.get("ip"));
     return NextResponse.next();
-  } catch {
-    return NextResponse.error();
+  } catch (e) {
+    console.error(e);
+    return new NextResponse("Instance password required", { status: 400 });
   }
 }
 
