@@ -4,8 +4,13 @@ import { validateInstancePassword } from "./app/api/lib";
 
 export function middleware(request: NextRequest) {
   const search = new URLSearchParams(request.url.split("?")[1] ?? "");
-  validateInstancePassword(search.get("ip"));
-  return NextResponse.next();
+
+  try {
+    validateInstancePassword(search.get("ip"));
+    return NextResponse.next();
+  } catch {
+    return NextResponse.error();
+  }
 }
 
 export const config = {
