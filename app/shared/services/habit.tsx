@@ -1,3 +1,5 @@
+import classNames from "classnames";
+
 function getDayLabel(index: number) {
   switch (index) {
     case 0:
@@ -30,22 +32,11 @@ const IconAccomplished = (
   </svg>
 );
 
-export function getDayMarkup(
-  index: number,
-  isAccomplished: boolean,
-  isPassed: boolean
-) {
-  if (!isPassed) {
-    return (
-      <span
-        style={{ fontWeight: "bold", fontStyle: "italic" }}
-        className="bg-gray-7"
-      >
-        {getDayLabel(index)}
-      </span>
-    );
-  }
-
+function DayContainer(props: {
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
   return (
     <div
       // inline styles here so that they can be included in statically rendered server response
@@ -62,10 +53,31 @@ export function getDayMarkup(
         color: "#757575",
         border: "1px solid #000",
         padding: "12px",
+        ...props.style,
       }}
-      className="bg-gray-6"
+      className={props.className}
     >
-      {isAccomplished ? IconAccomplished : IconUnaccomplished}
+      {props.children}
     </div>
+  );
+}
+
+export function getDayMarkup(
+  index: number,
+  isAccomplished: boolean,
+  isPassed: boolean
+) {
+  if (!isPassed) {
+    return (
+      <DayContainer style={{ fontWeight: "bold" }} className="bg-gray-7">
+        {getDayLabel(index)}
+      </DayContainer>
+    );
+  }
+
+  return (
+    <DayContainer className="bg-gray-6">
+      {isAccomplished ? IconAccomplished : IconUnaccomplished}
+    </DayContainer>
   );
 }
