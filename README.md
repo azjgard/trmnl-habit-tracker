@@ -1,6 +1,6 @@
 # Weekly Goal Tracker
 
-Track weekly goals through a simple web interface. Keep your goals top of mind via a cool e-ink display which you only need to charge once every few months.
+Track weekly goals through a simple web interface. Keep your goals top of mind via a cool e-ink display which you never (ish) need to charge. Goal tracking automatically resets each week.
 
 ![Picture of the goal tracker in action, deployed on the trmnl screen](pic.jpg)
 
