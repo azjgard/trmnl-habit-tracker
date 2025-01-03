@@ -42,9 +42,9 @@ export function getDayMarkup(
         fontWeight: "bold",
         fontSize: "22px",
         color: "#757575",
-        border: "3px solid #555",
+        border: "2px solid #555",
       }}
-      className="bg-gray-4"
+      className="bg-gray-6"
     >
       {isAccomplished ? "✅" : "X"}
     </div>
