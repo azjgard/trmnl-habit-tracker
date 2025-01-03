@@ -11,7 +11,6 @@ import type {
   Habit as HabitType,
   HabitsWithDaysAccomplished,
 } from "./backend/services/habit";
-import { renderToStaticMarkup } from "react-dom/server";
 import { getDayMarkup } from "./shared/services/habit";
 
 type HabitState = Omit<HabitType, "weekly_goal"> & { weekly_goal: number | "" };
