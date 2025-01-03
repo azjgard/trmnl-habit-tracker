@@ -42,6 +42,7 @@ export function getDayMarkup(
         fontWeight: "bold",
         fontSize: "22px",
         color: "#757575",
+        backgroundColor: "#C6C6C6",
       }}
     >
       {isAccomplished ? "✅" : "X"}
