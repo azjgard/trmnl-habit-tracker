@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Weekly Goal Tracker
 
-## Getting Started
+Track weekly goals through a simple web interface. Keep your goals top of mind via a cool e-ink display which you only need to charge once every few months.
 
-First, run the development server:
+![Picture of the goal tracker in action, deployed on the trmnl screen](pic.jpg)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+https://github.com/user-attachments/assets/fa169322-b3d4-408d-8c9f-74112ea4c89d
+
+This was specifically developed to back a private plugin created for my [trmnl](https://usetrmnl.com/) device. I'd love to make a public version of this plugin, but I don't currently foresee a low friction path to making it free + easy for other people to tap into this without me incurring compute costs over time.
+
+## Development
+
+You'll need git and a recent version of Node.js installed on your system.
+
+1. Clone this repository
+2. Run `npm install` from the root to install dependencies
+3. Run `npm run dev` from the root to run the web app locally
+
+You'll need an `.env` file in the root of the repository that looks like this:
+
+```sh
+# connection string for a Postgres database
+POSTGRES_URL=postgres://{user}:{password}@{host}
+# token which can be used for reading and writing to/from Vercel blob storage -- image uploads won't
+# work without this
+BLOB_READ_WRITE_TOKEN="vercel_blob_rw_xxxxxxxxxxxx"
+# optional: if specified, the web app will only load with `?ip={INSTANCE_PASSWORD}`, and the API
+# will only respond to requests with a header like `x-instance-password={INSTANCE_PASSWORD}
+INSTANCE_PASSWORD=xxxx-xxxx-xxxx-xxxx
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deployment
+I'm happy to write up a detailed guide for this upon request, but for now, I've written up some fairly high level instructions. It should be tenable for anyone to deploy their own instance, but be ready for quite a few steps.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+I built this with Next.js so that I could easily take advantage of the hosted infra you can get through Vercel's fairly generous free tier. Unfortunately, that means that some of this code (probably) suffers from vendor lock-in, and you'll (probably) also have to deploy to Vercel unless you fork the code.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Backend
 
-## Learn More
+1. Clone this repo
+2. Install the Vercel CLI and authenticate
+3. Create a new Vercel project (CLI can be used for this)
+4. Create a hosted Postgres database. I used [Neon](https://vercel.com/marketplace/neon) since it has a decent free tier, but you could use something else to your preference.
+5. Create a [Vercel Blob](https://vercel.com/docs/storage/vercel-blob) instance in your project
+6. Generate a random string which will be used to password-protect your instance (e.g. use a password manager)
+7. Appropriately configure the environment variables shown in the `.env` file above for your Vercel project
 
-To learn more about Next.js, take a look at the following resources:
+### Trmnl Plugin
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Create a new private plugin
+2. Set Strategy to "Polling"
+3. Set Polling URL to "{VERCEL_BASE_URL}/api/trmnl"
+4. In Polling Headers, add "x-instance-password=xxxx-xxxx-xxxx-xxxx"
+5. Set Remove Bleed Margin? to "No"
+6. Copy and paste the contents of [template.html](template.html) in your private plugin's template
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Testing
 
-## Deploy on Vercel
+1. Navigate to the URL of your app with `?ip={INSTANCE_PASSWORD}` as the query string -- the page should load
+2. Create up to 6 weekly habits; ensure you click "Save Changes" for each once configuration is done
+3. On the page of your private plugin, follow instructions for forcing a refresh
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+![Screenshot of private plugin page](screenshot.png)

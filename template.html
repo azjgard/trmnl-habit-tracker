@@ -1,0 +1,54 @@
+<div class="layout layout--horizontal" style="align-items:flex-start;justify-content:space-between;padding-top:0">
+  <div style="display:flex;flex:1;justify-content:center;height:100%">
+    <div style="display:flex;flex-direction:column;justify-content:space-between;">
+      {% for habit in habits limit:3 %}
+        <div>
+          <div style="display: flex; align-items: center;">
+            <img src="{{ habit.image }}" style="width:108px;height:80px;margin:5px;" />
+            <div>
+              <h1 style="font-size:22px;">{{ habit.name }}</h1>
+              <h2 style="font-size:14px;">Targeting <span style="font-size:16px;font-weight:bold;text-decoration:underline;">{{ habit.weekly_goal }} days</span> per week</h2>
+            </div>
+          </div>
+          <div style="display: flex;justify-content:space-between;gap:3px;">
+            {% for day in habit.days %}
+              <div style="width:45px;height:45px;border-radius:50%;border:1px solid #000;display:flex;justify-content:center;align-items:center;font-size:12px;">
+                {{ day }}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div style="width: 2px; height: 100%; background-color: #000;">
+    &nbsp;
+  </div>
+  <div style="display:flex;flex:1;justify-content:center;height:100%">
+    <div style="display:flex;flex-direction:column;justify-content:space-between;">
+      {% for habit in habits offset:3 %}
+        <div>
+          <div style="display: flex; align-items: center;">
+            <img src="{{ habit.image }}" style="width:108px;height:80px;margin:5px;" />
+            <div>
+              <h1 style="font-size:22px;">{{ habit.name }}</h1>
+              <h2 style="font-size:14px;">Targeting <span style="font-size:16px;font-weight:bold;text-decoration:underline;">{{ habit.weekly_goal }} days</span> per week</h2>
+            </div>
+          </div>
+          <div style="display: flex; justify-content:space-between;gap:3px;">
+            {% for day in habit.days %}
+              <div style="width:45px;height:45px;border-radius:50%;border:1px solid #000;display:flex;justify-content:center;align-items:center;font-size:12px;">
+                {{ day }}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<div class="title_bar" style="margin-top:10px;">
+  <img class="image" src="/images/plugins/trmnl--render.svg" />
+  <span class="title">Habit Tracker</span>
+  <span class="instance">{{ weekString }}</span>
+</div>
