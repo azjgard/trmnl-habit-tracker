@@ -60,3 +60,6 @@ I built this with Next.js so that I could easily take advantage of the hosted in
 3. On the page of your private plugin, follow instructions for forcing a refresh
 
 ![Screenshot of private plugin page](screenshot.png)
+
+## Future
+Would love a monthly or yearly view with charts which show overall goal progress on a longer time horizon, aggregating weekly info.
