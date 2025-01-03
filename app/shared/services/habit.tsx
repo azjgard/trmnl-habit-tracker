@@ -36,7 +36,14 @@ export function getDayMarkup(
   isPassed: boolean
 ) {
   if (!isPassed) {
-    return getDayLabel(index);
+    return (
+      <span
+        style={{ fontWeight: "bold", fontStyle: "italic" }}
+        className="bg-gray-7"
+      >
+        {getDayLabel(index)}
+      </span>
+    );
   }
 
   return (
@@ -53,8 +60,8 @@ export function getDayMarkup(
         fontWeight: "bold",
         fontSize: "22px",
         color: "#757575",
-        border: "2px solid #555",
-        padding: "8px",
+        border: "1px solid #000",
+        padding: "12px",
       }}
       className="bg-gray-6"
     >
