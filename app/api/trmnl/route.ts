@@ -16,7 +16,12 @@ export const GET = defineAuthenticatedRoute(async (_request: NextRequest) => {
           ...habit,
           days: habit.days.map((accomplished, day) => {
             return ReactDOMServer.renderToStaticMarkup(
-              getDayMarkup(day, accomplished, day < data.today)
+              getDayMarkup(
+                day,
+                accomplished,
+                day < data.today,
+                day === data.today
+              )
             );
           }),
         };

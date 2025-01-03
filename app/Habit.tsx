@@ -232,7 +232,7 @@ export default function Habit(props: {
                     [style.failed]: isFailed,
                   })}
                 >
-                  {getDayMarkup(i, isAccomplished, isFailed)}
+                  {getDayMarkup(i, isAccomplished, isFailed, isToday)}
                 </li>
               );
             })}

@@ -65,11 +65,16 @@ function DayContainer(props: {
 export function getDayMarkup(
   index: number,
   isAccomplished: boolean,
-  isPassed: boolean
+  isPassed: boolean,
+  isToday: boolean
 ) {
   if (!isPassed) {
     return (
-      <DayContainer style={{ fontWeight: "bold" }} className="bg-gray-7">
+      <DayContainer
+        style={{
+          ...(isToday ? { fontWeight: "bold" } : {}),
+        }}
+      >
         {getDayLabel(index)}
       </DayContainer>
     );
