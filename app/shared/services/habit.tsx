@@ -54,6 +54,7 @@ export function getDayMarkup(
         fontSize: "22px",
         color: "#757575",
         border: "2px solid #555",
+        padding: "8px",
       }}
       className="bg-gray-6"
     >
