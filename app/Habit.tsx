@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
@@ -10,6 +11,8 @@ import type {
   Habit as HabitType,
   HabitsWithDaysAccomplished,
 } from "./backend/services/habit";
+import { renderToStaticMarkup } from "react-dom/server";
+import { getDayMarkup } from "./shared/services/habit";
 
 type HabitState = Omit<HabitType, "weekly_goal"> & { weekly_goal: number | "" };
 
@@ -230,7 +233,7 @@ export default function Habit(props: {
                     [style.failed]: isFailed,
                   })}
                 >
-                  {getDayLabel(i, isAccomplished, isFailed)}
+                  {getDayMarkup(i, isAccomplished, isFailed)}
                 </li>
               );
             })}
@@ -250,53 +253,4 @@ export default function Habit(props: {
       </div>
     </>
   );
-}
-
-function getDayLabel(
-  index: number,
-  isAccomplished: boolean,
-  isPassed: boolean,
-) {
-  if (isPassed) {
-    if (isAccomplished) {
-      return "✅";
-    } else {
-      return (
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: "50%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            fontWeight: "bold",
-            fontSize: "22px",
-            color: "#757575",
-          }}
-        >
-          X
-        </div>
-      );
-    }
-  }
-
-  switch (index) {
-    case 0:
-      return "M";
-    case 1:
-      return "Tu";
-    case 2:
-      return "W";
-    case 3:
-      return "Th";
-    case 4:
-      return "Fr";
-    case 5:
-      return "Sa";
-    case 6:
-      return "Su";
-    default:
-      throw new Error("Invalid day index: " + index);
-  }
 }
