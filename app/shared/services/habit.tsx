@@ -48,11 +48,10 @@ function DayContainer(props: {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        fontWeight: "bold",
         fontSize: "22px",
         color: "#757575",
-        border: "1px solid #000",
         padding: "12px",
+        border: "1px solid #000",
         ...props.style,
       }}
       className={props.className}

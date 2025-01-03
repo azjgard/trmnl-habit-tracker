@@ -70,7 +70,6 @@
   }
 }
 
-
 .habitContainer:hover {
   & .habitRemoveButton {
     display: block;
@@ -113,7 +112,6 @@
 }
 
 .habitDay {
-  border: 3px solid black;
   box-sizing: border-box;
   width: 50px;
   height: 50px;
@@ -126,17 +124,14 @@
   cursor: pointer;
 
   &.accomplished {
-    opacity: .6;
-    background-color: #C6C6C6;
+    opacity: 0.6;
+    background-color: #c6c6c6;
     border-color: #757575;
   }
   &.failed {
-    opacity: .4;
-    background-color: #C6C6C6;
+    opacity: 0.4;
+    background-color: #c6c6c6;
     border-color: #757575;
-  }
-  &.today {
-    border-style: dashed;
   }
 }
 
