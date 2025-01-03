@@ -80,7 +80,7 @@ export function getDayMarkup(
     );
 
   return (
-    <DayContainer className={isAccomplished ? "bg-gray-5" : "bg-gray-6"}>
+    <DayContainer className={isAccomplished ? "bg-gray-4" : "bg-gray-6"}>
       {isAccomplished ? IconAccomplished : IconUnaccomplished}
     </DayContainer>
   );
