@@ -1,11 +1,11 @@
 import styles from "./page.module.css";
 import HabitContainer from "./HabitContainer";
-import { loadHabitsWithDaysAccomplished } from "./backend/services/habit";
+import { queryHabitsWithDaysAccomplished } from "./backend/services/habit";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const data = await loadHabitsWithDaysAccomplished();
+  const data = await queryHabitsWithDaysAccomplished();
   if (!data) {
     return <div>Something went wrong..</div>;
   }

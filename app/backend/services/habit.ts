@@ -6,19 +6,21 @@ function sundayFirstToMondayFirst(day: number) {
 }
 
 export type HabitsWithDaysAccomplished = NonNullable<
-  Awaited<ReturnType<typeof loadHabitsWithDaysAccomplished>>
+  Awaited<ReturnType<typeof queryHabitsWithDaysAccomplished>>
 >;
 
 export type Habit = HabitsWithDaysAccomplished["habits"][number];
 
-export async function loadHabitsWithDaysAccomplished() {
-  let client: VercelClient | undefined;
+export async function queryToday(client: VercelClient) {
+  const {
+    rows: [{ today }],
+  } = await client.sql`SELECT EXTRACT(DOW from now())::int as "today"`;
 
-  try {
-    client = createClient();
-    await client.connect();
+  return sundayFirstToMondayFirst(today);
+}
 
-    const { rows: habitLogsThisWeek } = (await client.sql`
+export async function queryHabitLogsThisWeek(client: VercelClient) {
+  const { rows: habitLogsThisWeek } = (await client.sql`
       SELECT 
         habit_logs.habit_id as habit_id, 
         EXTRACT(DOW from habit_logs.timestamp)::int as "day_int"
@@ -35,23 +37,39 @@ export async function loadHabitsWithDaysAccomplished() {
           habit_id, "day_int"
     `) as { rows: { habit_id: number; day_int: number }[] };
 
+  return habitLogsThisWeek.map(({ habit_id, day_int }) => ({
+    habit_id,
+    day_int: sundayFirstToMondayFirst(day_int),
+  }));
+}
+
+export async function queryHabitsWithDaysAccomplished() {
+  let client: VercelClient | undefined;
+
+  try {
+    client = createClient();
+    await client.connect();
+
+    const habitLogsThisWeek = await queryHabitLogsThisWeek(client);
+
     const daysAccomplishedByHabitId = habitLogsThisWeek.reduce<
       Record<number, number[]>
     >((acc, habitLog) => {
       const { habit_id, day_int } = habitLog;
       acc[habit_id] ??= [];
-      acc[habit_id].push(sundayFirstToMondayFirst(day_int));
+      acc[habit_id].push(day_int);
       return acc;
     }, {});
 
-    const { rows: habits } = (await client.sql`SELECT * from habits`) as {
-      rows: {
-        id: number;
-        name: string;
-        image: string | null;
-        weekly_goal: number;
-      }[];
-    };
+    const { rows: habits } =
+      (await client.sql`SELECT * from habits ORDER BY name`) as {
+        rows: {
+          id: number;
+          name: string;
+          image: string | null;
+          weekly_goal: number;
+        }[];
+      };
 
     const habitsWithDaysAccomplished = habits.map((habit) => {
       const daysAccomplishedSet = new Set(daysAccomplishedByHabitId[habit.id]);
@@ -72,12 +90,10 @@ export async function loadHabitsWithDaysAccomplished() {
       };
     });
 
-    const {
-      rows: [{ today }],
-    } = await client.sql`SELECT EXTRACT(DOW from now())::int as "today"`;
+    const today = await queryToday(client);
 
     return {
-      today: sundayFirstToMondayFirst(today),
+      today,
       habits: habitsWithDaysAccomplished,
     };
   } catch (e) {

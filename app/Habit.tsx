@@ -13,7 +13,9 @@ import type {
 } from "./backend/services/habit";
 import { getDayMarkup } from "./shared/services/habit";
 
-type HabitState = Omit<HabitType, "weekly_goal"> & { weekly_goal: number | "" };
+type HabitState = Omit<HabitType, "weekly_goal"> & {
+  weekly_goal: number | "";
+};
 
 export default function Habit(props: {
   habit: HabitType;
@@ -41,7 +43,10 @@ export default function Habit(props: {
     return (
       habitState.name !== habitStateInitial.current.name ||
       habitState.image !== habitStateInitial.current.image ||
-      habitState.weekly_goal !== habitStateInitial.current.weekly_goal
+      habitState.weekly_goal !== habitStateInitial.current.weekly_goal ||
+      !habitState.days.every(
+        (day, i) => day === habitStateInitial.current.days[i]
+      )
     );
   }, [habitState]);
 
@@ -111,11 +116,13 @@ export default function Habit(props: {
       return;
     }
 
-    const body: Record<string, string | number | null | undefined> = {
-      name: habitState.name,
-      image: habitState.image,
-      weekly_goal: habitState.weekly_goal,
-    };
+    const body: Record<string, string | number | null | undefined | boolean[]> =
+      {
+        name: habitState.name,
+        image: habitState.image,
+        weekly_goal: habitState.weekly_goal,
+        days: habitState.days,
+      };
 
     if (habitFromProps.id > 0) {
       body.id = habitFromProps.id;
@@ -170,6 +177,16 @@ export default function Habit(props: {
     }));
   };
 
+  const onDayClick = (dayIndex: number) => {
+    if (dayIndex > props.today) return;
+
+    setHabitState((prev) => {
+      const days: (typeof habitState)["days"] = [...prev.days];
+      days[dayIndex] = !prev.days[dayIndex];
+      return { ...prev, days };
+    });
+  };
+
   return (
     <>
       <div className={style.habitContainer}>
@@ -218,21 +235,23 @@ export default function Habit(props: {
         </div>
         <div className={style.row}>
           <ul className={style.habitDayList}>
-            {habitState.days.map((day, i) => {
-              const isAccomplished = day;
-              const isToday = props.today === i;
-              const isFailed = props.today > i;
+            {habitState.days.map((day, dayIndex) => {
+              const isAccomplished = Boolean(day);
+              const isToday = props.today === dayIndex;
+              const isFailed = props.today > dayIndex && !isAccomplished;
 
               return (
                 <li
-                  key={i}
+                  key={dayIndex}
                   className={classNames(style.habitDay, {
                     [style.accomplished]: isAccomplished,
                     [style.today]: isToday,
                     [style.failed]: isFailed,
+                    [style.laterDate]: dayIndex > props.today,
                   })}
+                  onClick={() => onDayClick(dayIndex)}
                 >
-                  {getDayMarkup(i, isAccomplished, isFailed, isToday)}
+                  {getDayMarkup(dayIndex, props.today, isAccomplished)}
                 </li>
               );
             })}

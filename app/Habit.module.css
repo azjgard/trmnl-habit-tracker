@@ -109,6 +109,12 @@
   margin: 10px 0 0 0;
   padding: 0;
   width: 100%;
+
+  /* avoid annoying UI issue where options get sporadically selected while toggling */
+  &,
+  & * {
+    user-select: none;
+  }
 }
 
 .habitDay {
@@ -134,6 +140,10 @@
     background-color: #c6c6c6;
     border-color: #757575;
   }
+  &.laterDate {
+    pointer-events: none;
+    cursor: not-allowed;
+  }
 
   & > div {
     border: none !important;
@@ -141,7 +151,7 @@
 }
 
 .saveChangesContainer {
-  margin: 10px 0 0 0;
+  margin: 10px 0;
 }
 
 .error {

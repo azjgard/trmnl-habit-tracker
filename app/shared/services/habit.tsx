@@ -1,7 +1,5 @@
-import classNames from "classnames";
-
-function getDayLabel(index: number) {
-  switch (index) {
+function getDayLabel(dayIndex: number) {
+  switch (dayIndex) {
     case 0:
       return "M";
     case 1:
@@ -17,7 +15,7 @@ function getDayLabel(index: number) {
     case 6:
       return "Su";
     default:
-      throw new Error("Invalid day index: " + index);
+      throw new Error("Invalid day index: " + dayIndex);
   }
 }
 
@@ -62,22 +60,24 @@ function DayContainer(props: {
 }
 
 export function getDayMarkup(
-  index: number,
-  isAccomplished: boolean,
-  isPassed: boolean,
-  isToday: boolean
+  dayIndex: number,
+  todayIndex: number,
+  isAccomplished: boolean
 ) {
-  if (!isPassed) {
+  // if day is today, this means we'll only show either the day label or the checkmark -- no way to mark
+  // today as failed manually/prematurely, you just have to let the day pass
+  //
+  // i think this is fine: leaves hope until the last minute that you accomplish the thing! (also too lazy to refactor atm)
+  if (dayIndex >= todayIndex && !isAccomplished)
     return (
       <DayContainer
         style={{
-          ...(isToday ? { fontWeight: "bold" } : {}),
+          ...(dayIndex === todayIndex ? { fontWeight: "bold" } : {}),
         }}
       >
-        {getDayLabel(index)}
+        {getDayLabel(dayIndex)}
       </DayContainer>
     );
-  }
 
   return (
     <DayContainer className="bg-gray-6">
